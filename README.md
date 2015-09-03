@@ -1,4 +1,4 @@
-# Client logic Python3 example:
+# Client logic Python(3.4.3) example:
 
 ### config
 ```
@@ -35,8 +35,6 @@ api += postfix
 
 token = '&t=' + base64.urlsafe_b64encode(hashlib.md5((api + secret_key).encode()).digest()).decode()
 url = 'http://host/{}{}'.format(api, token)
-
-print(url)
 ```
 
 ### test get api
@@ -51,7 +49,7 @@ print(json_text)
 ```
 
 
-# Client logic Ruby example:
+# Client logic Ruby(2.0.0p481) example:
 
 ### config
 ```
@@ -63,12 +61,10 @@ $secret_key = '{secret_key}'
 ```
 api = 'external-api/v1/orgs/%s/courses/%s/scores' % [{org_id}, {course_code}]
 postfix = "?aid=#{$app_id}&ts=%s" % Time.now.to_i
-
 api += postfix
 
 token = '&t=' + Base64.urlsafe_encode64(Digest::MD5.digest((api + $secret_key)))
 url = "http://host/#{api}#{token}"
-puts url
 ```
 
 ### test get api
@@ -80,17 +76,17 @@ Net::HTTP.version_1_2
 	}
 ```
 
-# Client logic Java example:
+# Client logic Java(1.8.0_25) example:
 
 ### config
 ```
-String APP_ID = "app_id";
-String SECRET_KEY = "secret_key";
+String APP_ID = "{app_id}";
+String SECRET_KEY = "{secret_key}";
 ```
 
 ### generate token
 ```	
-String api = String.format("external-api/v1/orgs/%s/courses/%s/scores", org_id, course_code);
+String api = String.format("external-api/v1/orgs/%s/courses/%s/scores", {org_id}, {course_code});
 String postfix = String.format("?aid=%s&ts=%s", APP_ID, (int)(System.currentTimeMillis()/1000));
 api += postfix;
 
@@ -107,7 +103,6 @@ catch(Exception e)
 	e.printStackTrace();
 }
 String url = String.format("http://host/%s%s", api, token);
-System.out.println(url);
 ```
 
 ### test get api
@@ -148,3 +143,26 @@ finally
 }
 ```
 
+# Client logic PHP(5.5.27) example:
+
+### config
+```
+static $app_id = '{app_id}';
+static $secret_key = '{secret_key}';
+```
+
+### generate token
+```
+$api = sprintf('external-api/v1/orgs/%d/courses/%s/scores', {org_id}, {course_code});
+$postfix = "?aid={$app_id}&ts=".time();
+$api .= $postfix;
+
+$token = '&t='.strtr(base64_encode(md5($api.$secret_key, true)), '+/', '-_');
+$url = "http://host/{$api}{$token}";
+```
+
+### test get api
+```
+$result = file_get_contents($url);
+echo $result;
+```
