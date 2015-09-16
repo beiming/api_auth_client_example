@@ -166,3 +166,67 @@ $url = "http://host/{$api}{$token}";
 $result = file_get_contents($url);
 echo $result;
 ```
+
+
+# Client logic Javascript example:
+
+### config
+```
+var app_key = 'app_key';
+var secret_key = 'secret_key';
+```
+
+### url_safe_base64_encode
+```
+Base64 = {
+	base64EncodeChars: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
+	url_safe_encode: function (bytesStr) {
+		return Base64.encode(bytesStr).replace(/\+/g, '-').replace(/\//g, '_');
+	},
+	encode: function (bytesStr) {
+	    var c1, c2, c3;
+	    var i = 0,
+	        len = bytesStr.length,
+	        string = '';
+
+	    while (i < len) {
+	        c1 = bytesStr[i++] & 0xff;
+	        if (i == len) {
+	            string += Base64.base64EncodeChars.charAt(c1 >> 2);
+	            string += Base64.base64EncodeChars.charAt((c1 & 0x3) << 4);
+	            string += "==";
+	            break;
+	        }
+	        c2 = bytesStr[i++];
+	        if (i == len) {
+	            string += Base64.base64EncodeChars.charAt(c1 >> 2);
+	            string += Base64.base64EncodeChars.charAt(((c1 & 0x3) << 4) | ((c2 & 0xF0) >> 4));
+	            string += Base64.base64EncodeChars.charAt((c2 & 0xF) << 2);
+	            string += "=";
+	            break;
+	        }
+	        c3 = bytesStr[i++];
+	        string += Base64.base64EncodeChars.charAt(c1 >> 2);
+	        string += Base64.base64EncodeChars.charAt(((c1 & 0x3) << 4) | ((c2 & 0xF0) >> 4));
+	        string += Base64.base64EncodeChars.charAt(((c2 & 0xF) << 2) | ((c3 & 0xC0) >> 6));
+	        string += Base64.base64EncodeChars.charAt(c3 & 0x3F)
+	    }
+	    return string;
+	},
+}
+```
+
+### generate token
+```
+var timestamp = ~~(Date.now() / 1000);
+var host = 'host';
+var uri = "/uri";
+
+var url_partial = "{uri}?app_key={app_key}&ts={timestamp}".replace(/\{uri\}/g, uri).replace(/\{app_key\}/g, app_key).replace(/\{timestamp\}/g, timestamp);
+
+var md5_bytes = md5(url_partial + secret_key, {asBytes: true});
+var token = Base64.url_safe_encode(md5_bytes)
+console.log(token);
+var url = "http://{host}{url_partial}&token={token}".replace(/\{host\}/g, host).replace(/\{url_partial\}/g, url_partial).replace(/\{token\}/g, token);
+console.log(url);
+```

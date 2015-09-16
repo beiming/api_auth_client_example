@@ -112,3 +112,4 @@ crashlytics-build.properties
 
 /keys/*
 *.class
+/node_modules/
